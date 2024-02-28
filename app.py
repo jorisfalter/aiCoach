@@ -28,7 +28,11 @@ def ask():
     user_message = request.json['message']
     response = client.chat.completions.create(model="gpt-4",
         messages=[
-            {"role": "system", "content": "you always answer with a joke"},
+            # {"role": "system", "content": "you always answer with a joke"},
+            # {"role": "system", "content": "you always answer with high energy, as if you're Tony Robbins"},
+            {"role": "system", "content": "you always answer with opportunism and enthusiasm, pushing me to achieve a ten times better version of myself"},
+
+
             {"role": "user", "content": user_message}
             ])
     print(response)
