@@ -3,15 +3,12 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
-# Access the OpenAI API key
-openai_api_key = os.getenv('API_KEY')
-
-client = OpenAI(api_key=openai_api_key)
-import os
-from dotenv import load_dotenv
-
 # Load environment variables from .env file
 load_dotenv()
+
+# Access the OpenAI API key
+openai_api_key = os.getenv('API_KEY')
+client = OpenAI(api_key=openai_api_key)
 
 from flask_cors import CORS
 
