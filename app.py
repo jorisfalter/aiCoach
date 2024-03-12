@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask import Flask, send_from_directory
 from openai import OpenAI
 import os
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
 @app.route('/')
 def home():
-    return send_from_directory('static', 'index.html')
+    return render_template('index.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
