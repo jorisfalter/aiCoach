@@ -19,9 +19,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-
-
-
 @app.route('/ask', methods=['POST'])
 def ask():
     user_message = request.json['message']
