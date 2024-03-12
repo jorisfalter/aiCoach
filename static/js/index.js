@@ -16,7 +16,7 @@ async function sendMessage() {
 
   const data = await response.json();
   // Append bot response to chat
-  chatWindow.innerHTML += `<div>Bot: ${data.response}</div>`;
+  chatWindow.innerHTML += `<div>Tony: ${data.response}</div>`;
 
   inputField.value = ""; // Clear the input field
 }
