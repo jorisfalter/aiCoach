@@ -1,6 +1,6 @@
 # aiCoach
 
-The goal is to make a Tony Robbins style motivational coach
+The goal is to experiment with chatbots by making a Tony Robbins style motivational coach
 
 ## Run Locally
 
