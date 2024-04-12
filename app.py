@@ -1,7 +1,9 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, session
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
+from uuid import uuid4
 
 # Load environment variables from .env file
 load_dotenv()
@@ -10,29 +12,53 @@ load_dotenv()
 openai_api_key = os.getenv('API_KEY')
 client = OpenAI(api_key=openai_api_key)
 
-from flask_cors import CORS
-
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Secure secret key for session management
 CORS(app)
 
+# Initialize the conversations dictionary
+conversations = {}
 
 @app.route('/ask', methods=['POST'])
 def ask():
+    if 'session_id' not in session:
+        session['session_id'] = str(uuid4())  # Assign a unique session ID
+
+    session_id = session['session_id']
+
+
+   # Check if it's a new session and initialize the system message
+    if session_id not in conversations:
+        conversations[session_id] = [{
+            "role": "system",
+            "content": "you always answer with opportunism and enthusiasm, pushing me to achieve a ten times better version of myself. You don't answer with practicalities, but focus on my mindset and energy level. You never give the standard solutions, always the creative, out of the box solutions"
+        }]
+
+
     user_message = request.json['message']
+    
+    # Retrieve or initialize conversation history
+    if session_id not in conversations:
+        conversations[session_id] = []  # Start a new conversation history for this session
+
+    # Append user message to conversation history
+    conversations[session_id].append({"role": "user", "content": user_message})
+
+    # Call to OpenAI
     response = client.chat.completions.create(model="gpt-4",
-        messages=[
-            # {"role": "system", "content": "you always answer with a joke"},
-            # {"role": "system", "content": "you always answer with high energy, as if you're Tony Robbins"},
-            {"role": "system", "content": "you always answer with opportunism and enthusiasm, pushing me to achieve a ten times better version of myself. You don't answer with practicalities, but focus on my mindset and energy level. You never give the standard solutions, always the creative, out of the box solutions"},
+                                              messages=conversations[session_id])
 
+    # Extract bot response
+    bot_response = response.choices[0].message.content
 
-            {"role": "user", "content": user_message}
-            ])
-    print(response)
-    return jsonify({'response': response.choices[0].message.content})
+    # Append bot's response to conversation history
+    conversations[session_id].append({"role": "system", "content": bot_response})
 
+    # # Limit the conversation history size to keep the memory usage reasonable
+    # if len(conversations[session_id]) > 20:
+    #     conversations[session_id] = conversations[session_id][-20:]
 
-
+    return jsonify({'response': bot_response})
 
 @app.route('/')
 def home():

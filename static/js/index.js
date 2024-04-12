@@ -1,3 +1,13 @@
+document
+  .getElementById("userInput")
+  .addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent the default action to stop submitting form
+      sendMessage(); // Call the sendMessage function
+    }
+  });
+
+// send message function
 async function sendMessage() {
   const inputField = document.getElementById("userInput");
   const userMessage = inputField.value;
