@@ -12,6 +12,7 @@ async function sendMessage() {
   const inputField = document.getElementById("userInput");
   const userMessage = inputField.value;
   const chatWindow = document.getElementById("chat");
+  inputField.value = ""; // Clear the input field
 
   // Append user message to chat
   chatWindow.innerHTML += `<div><b>You</b>: ${userMessage}</div>`;
@@ -27,6 +28,4 @@ async function sendMessage() {
   const data = await response.json();
   // Append bot response to chat
   chatWindow.innerHTML += `<div><b>Tony</b>: ${data.response}</div>`;
-
-  inputField.value = ""; // Clear the input field
 }
