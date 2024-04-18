@@ -15,7 +15,7 @@ async function sendMessage() {
   inputField.value = ""; // Clear the input field
 
   // Append user message to chat
-  chatWindow.innerHTML += `<div><b>You</b>: ${userMessage}</div>`;
+  chatWindow.innerHTML += `<div class='chat-message you'><b>You</b>: ${userMessage}</div>`;
 
   const response = await fetch("/ask", {
     method: "POST",
@@ -27,5 +27,5 @@ async function sendMessage() {
 
   const data = await response.json();
   // Append bot response to chat
-  chatWindow.innerHTML += `<div><b>Tony</b>: ${data.response}</div>`;
+  chatWindow.innerHTML += `<div class='chat-message tony'><b>Tony</b>: ${data.response}</div>`;
 }

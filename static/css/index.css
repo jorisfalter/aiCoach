@@ -31,6 +31,25 @@ body, html {
     overflow-y: auto;
     padding: 20px;
     background: #f9f9f9;
+
+}
+
+/* Ensure that messages are not too wide */
+.chat-message {
+    max-width: 90%;
+    margin-bottom: 0.5em;
+    margin: 20px auto;  /* Center the chat container with margin */
+
+}
+
+/* Differentiate the speaker */
+.chat-message.you {
+    /* text-align: right; */
+}
+
+.chat-message.tony {
+    /* text-align: left; */
+    /* font-weight: bold; /* or use color to differentiate */
 }
 
 .user-input, .send-button {
