@@ -42,15 +42,15 @@ body, html {
 
 }
 
-/* Differentiate the speaker */
+/* Differentiate the speaker
 .chat-message.you {
-    /* text-align: right; */
-}
+    text-align: right; 
+} 
 
 .chat-message.tony {
-    /* text-align: left; */
-    /* font-weight: bold; /* or use color to differentiate */
-}
+    /* text-align: left; 
+    /* font-weight: bold; /* or use color to differentiate 
+} */
 
 .user-input, .send-button {
     padding: 10px;
