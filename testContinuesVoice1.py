@@ -71,5 +71,5 @@ if collected_frames:
     audio_data = b''.join(collected_frames)
     audio_segment = AudioSegment(data=audio_data, sample_width=2, frame_rate=sample_rate, channels=channels)
 
-    audio_segment.export("detected_speech.mp3", format="mp3")
-    print("Exported detected speech to 'detected_speech.mp3'")
+    audio_segment.export("detected_speech.wav", format="wav")
+    print("Exported detected speech to 'detected_speech.wav'")
