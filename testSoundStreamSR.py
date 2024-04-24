@@ -1,23 +1,22 @@
-import speech_recognition as sr
+from google.cloud import speech
+import io
 
-def listen_for_speech(timeout=5):
-    recognizer = sr.Recognizer()
-    mic = sr.Microphone()
+def google_cloud_transcribe(stream_file):
+    client = speech.SpeechClient()
 
-    with mic as source:
-        print("Listening...")
-        recognizer.adjust_for_ambient_noise(source)  # Adjust for ambient noise
-        audio = recognizer.listen(source, timeout=timeout)
-        print("Processing audio...")
+    with io.open(stream_file, "rb") as audio_file:
+        content = audio_file.read()
 
-    try:
-        # Process audio (you can use Google, IBM, etc.)
-        transcript = recognizer.recognize_google(audio)
-        print("Transcription:", transcript)
-    except sr.UnknownValueError:
-        print("No speech detected.")
-    except sr.RequestError as e:
-        print(f"Could not process audio: {e}")
+    audio = speech.RecognitionAudio(content=content)
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=16000,
+        language_code="en-US"
+    )
 
-# This will listen for the first speech and stop after a period of silence.
-listen_for_speech()
+    response = client.recognize(config=config, audio=audio)
+
+    for result in response.results:
+        print("Transcript: {}".format(result.alternatives[0].transcript))
+
+# Usage: google_cloud_transcribe('path_to_audio_file.wav')
