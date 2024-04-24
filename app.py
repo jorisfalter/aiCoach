@@ -4,6 +4,9 @@ import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 from uuid import uuid4
+import requests
+from elevenlabs.client import ElevenLabs
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -50,6 +53,25 @@ def ask():
 
     # Extract bot response
     bot_response = response.choices[0].message.content
+
+    # call elevenlabs to put it in Tony's voice
+    url = "https://api.elevenlabs.io/v1/text-to-speech/JqDxs5THf3pyDYeCJfCi"
+
+    payload = {"text": bot_response}
+    headers = {
+        "xi-api-key": os.getenv('ELEVENLABS_API_KEY'),
+        "Content-Type": "application/json"
+    }
+
+    ## out for now, don't want to blow my elevenlabs credit
+    # tony_response = requests.request("POST", url, json=payload, headers=headers)
+
+    # ## for testing only - convert Tony response to mp3
+    # CHUNK_SIZE = 1024
+    # with open('output_tony.mp3', 'wb') as f:
+    #     for chunk in tony_response.iter_content(chunk_size=CHUNK_SIZE):
+    #         if chunk:
+    #             f.write(chunk)
 
     # Append bot's response to conversation history
     conversations[session_id].append({"role": "system", "content": bot_response})
