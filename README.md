@@ -8,5 +8,12 @@ http://127.0.0.1:5000/
 
 ##
 
-App_old is without session > this one is being uploaded now
-App is with session
+App.js is with session
+
+##
+
+for pyaudio, i'm using a virtual environment as my m1 macbook gives some jitter there
+
+source myenv/bin/activate
+
+deactivate
