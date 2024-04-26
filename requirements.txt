@@ -5,3 +5,4 @@ python-dotenv==1.0.1
 requests==2.31.0
 PyAudio==0.2.14
 gunicorn==21.2.0
+elevenlabs==1.1.2
