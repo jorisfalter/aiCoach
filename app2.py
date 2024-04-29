@@ -71,7 +71,6 @@ def handle_audio():
 
                 tony_response = requests.request("POST", url, json=payload, headers=headers)
                 print("received tony response")
-                print(tony_response)
                   # Emit the response via SocketIO
                 if tony_response.status_code == 200:
                     # Extract binary audio content
