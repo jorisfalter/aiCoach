@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Speech App</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var socket = io();
+
+            socket.on('connect', function () {
+                console.log('Connected!');
+            });
+
+            socket.on('audio_response', function (data) {
+                console.log('Received audio:', data);
+                let audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = 'data:audio/mp3;base64,' + data.data;
+                audioPlayer.play();
+            });
+            socket.on('audio_error', function (data) {
+                console.error('Error fetching audio:', data.error);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <audio id="audioPlayer" controls hidden></audio>
+    <button onclick="startListening()">Start</button>
+
+
+    <script src="{{ url_for('static', filename='js/index2.js') }}"></script>
+
+</body>
+
+</html>

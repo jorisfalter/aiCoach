@@ -1,9 +1,20 @@
+from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO
+import threading
+import speech_recognition as sr
+import requests
+from playsound import playsound
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
 from elevenlabs.client import ElevenLabs
 import requests
+import base64
 
+## this app includes the audio
+
+app = Flask(__name__)
+socketio = SocketIO(app, logger=True, engineio_logger=True)
 
 
 # Load environment variables from .env file
@@ -15,15 +26,18 @@ client = OpenAI(api_key=openai_api_key)
 
 import speech_recognition as sr
 
-def listen_and_transcribe():
-    # Initialize the recognizer
+@app.route('/')
+def index():
+    return render_template('index2.html')
+
+def handle_audio():
     recognizer = sr.Recognizer()
-    
     # Start the microphone and keep listening
     with sr.Microphone() as source:
         print("Listening...")
         recognizer.adjust_for_ambient_noise(source)  # Adjust for ambient noise
         while True:
+            print("In the while loop")
             try:
                 audio = recognizer.listen(source, timeout=5)  # Listen for 5 seconds
                 print("Processing audio...")
@@ -46,13 +60,37 @@ def listen_and_transcribe():
                 # call elevenlabs to put it in Tony's voice
                 url = "https://api.elevenlabs.io/v1/text-to-speech/JqDxs5THf3pyDYeCJfCi"
 
-                payload = {"text": bot_response}
+                payload = {
+                    "text": bot_response,     
+                    "speed": 1.25  # Adjust the speed of the speech
+                }
                 headers = {
                     "xi-api-key": os.getenv('ELEVENLABS_API_KEY'),
                     "Content-Type": "application/json"
                 }
 
                 tony_response = requests.request("POST", url, json=payload, headers=headers)
+                print("received tony response")
+                print(tony_response)
+                  # Emit the response via SocketIO
+                if tony_response.status_code == 200:
+                    # Extract binary audio content
+                    audio_content = tony_response.content
+                    # Encode as base64
+                    audio_base64 = base64.b64encode(audio_content).decode('utf-8')
+                    # Emit the base64-encoded audio content via SocketIO
+                    socketio.emit('audio_response', {'data': audio_base64})
+                else:
+                    print("Failed to get audio from ElevenLabs:", tony_response.status_code)
+                    # Handle error appropriately, maybe send an error message to the client
+                    socketio.emit('audio_error', {'error': 'Failed to fetch audio'})
+
+                # if tony_response.status_code == 200:
+                #     audio_content = tony_response.content
+                #     audio_base64 = base64.b64encode(audio_content).decode('utf-8')
+                #     return jsonify({"audio_data": audio_base64})
+                # else:
+                #     return jsonify({"error": "Failed to fetch audio"}), 500
 
             # if it didn't capture the audio
             except sr.UnknownValueError:
@@ -62,5 +100,14 @@ def listen_and_transcribe():
             except Exception as e:
                 print(f"An error occurred: {e}")
 
-# Run the function
-listen_and_transcribe()
+@app.route('/start_listening', methods=['POST'])
+def start_listening():
+    # threading.Thread(target=handle_audio).start()
+    print("Starting audio capture...")
+    socketio.start_background_task(handle_audio)
+    return jsonify(success=True)
+
+if __name__ == '__main__':
+    # app.run(debug=True)
+    socketio.run(app, debug=True)
+

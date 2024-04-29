@@ -7,6 +7,7 @@ from uuid import uuid4
 import requests
 from elevenlabs.client import ElevenLabs
 
+## this app only does the chat
 
 # Load environment variables from .env file
 load_dotenv()
