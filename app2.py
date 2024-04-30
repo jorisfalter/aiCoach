@@ -42,6 +42,7 @@ def handle_audio():
         while True:
             print("In the while loop")
             try:
+                print("In the Try")
                 audio = recognizer.listen(source)
                 print("Processing audio...")
                 text = recognizer.recognize_google(audio)  # Transcribe using Google Web Speech API
@@ -66,8 +67,8 @@ def handle_audio():
                 url = "https://api.elevenlabs.io/v1/text-to-speech/JqDxs5THf3pyDYeCJfCi"
 
                 payload = {
-                    "text": bot_response,     
-                    "speed": 1.25  # Adjust the speed of the speech - apparently this doesn't work
+                    "text": bot_response     
+                    # "speed": 1.25  # Adjust the speed of the speech - apparently this doesn't work
                 }
                 headers = {
                     "xi-api-key": os.getenv('ELEVENLABS_API_KEY'),
