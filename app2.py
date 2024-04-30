@@ -67,7 +67,7 @@ def handle_audio():
 
                 payload = {
                     "text": bot_response,     
-                    "speed": 1.25  # Adjust the speed of the speech
+                    "speed": 1.25  # Adjust the speed of the speech - apparently this doesn't work
                 }
                 headers = {
                     "xi-api-key": os.getenv('ELEVENLABS_API_KEY'),
