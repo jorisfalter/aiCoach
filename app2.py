@@ -14,7 +14,9 @@ import base64
 ## this app includes the audio
 
 app = Flask(__name__)
-socketio = SocketIO(app, logger=True, engineio_logger=True)
+# socketio = SocketIO(app, logger=True, engineio_logger=True)
+socketio = SocketIO(app)
+
 
 
 # Load environment variables from .env file
@@ -32,6 +34,7 @@ def index():
 
 def handle_audio():
     recognizer = sr.Recognizer()
+    recognizer.pause_threshold = 2.0  # seconds of non-speaking audio before a phrase is considered complete
     # Start the microphone and keep listening
     with sr.Microphone() as source:
         print("Listening...")
@@ -39,7 +42,7 @@ def handle_audio():
         while True:
             print("In the while loop")
             try:
-                audio = recognizer.listen(source, timeout=5)  # Listen for 5 seconds
+                audio = recognizer.listen(source)
                 print("Processing audio...")
                 text = recognizer.recognize_google(audio)  # Transcribe using Google Web Speech API
                 print("You said:", text)
@@ -55,7 +58,7 @@ def handle_audio():
                 response = client.chat.completions.create(model="gpt-4",messages=messages)
                 # # Extract bot response
                 bot_response = response.choices[0].message.content
-                print(bot_response)
+                # print(bot_response)
                 socketio.emit('display_text', {'user_text': text, 'bot_text': bot_response})
 
 
@@ -94,6 +97,8 @@ def handle_audio():
                 #     return jsonify({"error": "Failed to fetch audio"}), 500
 
             # if it didn't capture the audio
+            except sr.WaitTimeoutError:
+                print("Listening timed out whilst waiting for phrase to start")
             except sr.UnknownValueError:
                 print("Google Speech Recognition could not understand audio")
             except sr.RequestError as e:
