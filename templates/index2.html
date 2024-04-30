@@ -12,6 +12,11 @@
                 console.log('Connected!');
             });
 
+            socket.on('display_text', function (data) {
+                document.getElementById('userText').textContent = "User: " + data.user_text;
+                document.getElementById('botText').textContent = "Bot: " + data.bot_text;
+            });
+
             socket.on('audio_response', function (data) {
                 console.log('Received audio:', data);
                 let audioPlayer = document.getElementById('audioPlayer');
@@ -29,6 +34,10 @@
     <audio id="audioPlayer" controls hidden></audio>
     <button onclick="startListening()">Start</button>
 
+    <h2>User Says:</h2>
+    <div id="userText"></div>
+    <h2>Bot Replies:</h2>
+    <div id="botText"></div>
 
     <script src="{{ url_for('static', filename='js/index2.js') }}"></script>
 

@@ -56,6 +56,8 @@ def handle_audio():
                 # # Extract bot response
                 bot_response = response.choices[0].message.content
                 print(bot_response)
+                socketio.emit('display_text', {'user_text': text, 'bot_text': bot_response})
+
 
                 # call elevenlabs to put it in Tony's voice
                 url = "https://api.elevenlabs.io/v1/text-to-speech/JqDxs5THf3pyDYeCJfCi"
