@@ -16,7 +16,7 @@ import base64
 app = Flask(__name__)
 # socketio = SocketIO(app, logger=True, engineio_logger=True)
 socketio = SocketIO(app)
-socketio.run(app, debug=True, host='0.0.0.0', port=os.environ.get('PORT', 5000))
+# socketio.run(app, debug=True, host='0.0.0.0', port=os.environ.get('PORT', 5000))
 
 # Load environment variables from .env file
 load_dotenv()
