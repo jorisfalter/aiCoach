@@ -56,7 +56,7 @@ def handle_audio():
                     "content": text
                 }]
                 # # Call to Groq
-                chat_completion = client.chat.completions.create( messages,
+                chat_completion = client.chat.completions.create( messages=messages,
                     model="llama3-8b-8192")
                 # # Extract bot response
                 bot_response = chat_completion.choices[0].message.content
