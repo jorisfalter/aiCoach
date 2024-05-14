@@ -8,6 +8,7 @@ import requests
 from elevenlabs.client import ElevenLabs
 
 ## this app only does the chat - with Groq and LLama3
+## Wip - not finished yet
 
 # Load environment variables from .env file
 load_dotenv()
