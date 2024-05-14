@@ -55,7 +55,7 @@ def handle_audio():
                     "content": text
                 }]
                 # # Call to OpenAI
-                response = client.chat.completions.create(model="gpt-4",messages=messages)
+                response = client.chat.completions.create(model="gpt-4o",messages=messages)
                 # # Extract bot response
                 bot_response = response.choices[0].message.content
                 # print(bot_response)
