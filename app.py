@@ -49,7 +49,7 @@ def ask():
     conversations[session_id].append({"role": "user", "content": user_message})
 
     # Call to OpenAI
-    response = client.chat.completions.create(model="gpt-4",
+    response = client.chat.completions.create(model="gpt-4o",
                                               messages=conversations[session_id])
 
     # Extract bot response
