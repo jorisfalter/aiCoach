@@ -48,6 +48,7 @@ def handle_audio():
                 
                 response = client.chat.completions.create(model="gpt-4o",messages=messages)
                 bot_response = response.choices[0].message.content
+                print(bot_response)
                 socketio.emit('display_text', {'user_text': text, 'bot_text': bot_response})
                 
                 url = "https://api.elevenlabs.io/v1/text-to-speech/JqDxs5THf3pyDYeCJfCi"
