@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Voice Command App</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            document.getElementById('startButton').addEventListener('click', () => {
+                socket.emit('start_listening');
+            });
+
+            document.getElementById('stopButton').addEventListener('click', () => {
+                socket.emit('stop_listening');
+            });
+
+            socket.on('listening_started', (data) => {
+                console.log(data.status);
+            });
+
+            socket.on('listening_stopped', (data) => {
+                console.log(data.status);
+            });
+
+            socket.on('display_text', (data) => {
+                document.getElementById('userText').textContent = "User: " + data.user_text;
+                document.getElementById('botText').textContent = "Bot: " + data.bot_text;
+            });
+
+            socket.on('audio_response', (data) => {
+                let audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = 'data:audio/mp3;base64,' + data.data;
+                audioPlayer.play();
+            });
+
+            socket.on('audio_error', (data) => {
+                console.error('Error fetching audio:', data.error);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <button id="startButton">Start Listening</button>
+    <button id="stopButton">Stop Listening</button>
+    <h2>User Says:</h2>
+    <div id="userText"></div>
+    <h2>Bot Replies:</h2>
+    <div id="botText"></div>
+    <audio id="audioPlayer" controls></audio>
+</body>
+
+</html>
