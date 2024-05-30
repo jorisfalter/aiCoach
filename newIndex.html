@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+</head>
+
+<body>
+    <button id="startBtn">Start Recording</button>
+    <button id="stopBtn" disabled>Stop Recording</button>
+    <audio id="audioPlayback" controls></audio>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioContext;
+        let analyser;
+        let microphone;
+        let scriptProcessor;
+        let silenceStart;
+        const silenceDelay = 2000; // 2 seconds
+
+        document.getElementById('startBtn').addEventListener('click', startRecording);
+        document.getElementById('stopBtn').addEventListener('click', stopRecording);
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = document.getElementById('audioPlayback');
+                        audio.src = audioUrl;
+                        audioChunks = [];
+                    };
+
+                    mediaRecorder.start();
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('stopBtn').disabled = false;
+
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    microphone = audioContext.createMediaStreamSource(stream);
+                    scriptProcessor = audioContext.createScriptProcessor(256, 1, 1);
+
+                    analyser.fftSize = 512;
+                    microphone.connect(analyser);
+                    analyser.connect(scriptProcessor);
+                    scriptProcessor.connect(audioContext.destination);
+
+                    scriptProcessor.onaudioprocess = function (event) {
+                        const buffer = event.inputBuffer.getChannelData(0);
+                        const now = performance.now();
+
+                        let sum = 0;
+                        for (let i = 0; i < buffer.length; i++) {
+                            sum += buffer[i] * buffer[i];
+                        }
+                        const rms = Math.sqrt(sum / buffer.length);
+
+                        if (rms < 0.01) {
+                            if (!silenceStart) {
+                                silenceStart = now;
+                            } else if (now - silenceStart > silenceDelay) {
+                                stopRecording();
+                            }
+                        } else {
+                            silenceStart = null;
+                        }
+                    };
+                })
+                .catch(err => console.error('Error accessing microphone:', err));
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+            }
+            if (audioContext && audioContext.state !== "closed") {
+                scriptProcessor.disconnect();
+                analyser.disconnect();
+                microphone.disconnect();
+                audioContext.close();
+            }
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+    </script>
+</body>
+
+</html>
