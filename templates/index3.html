@@ -33,10 +33,17 @@
                 let audioPlayer = document.getElementById('audioPlayer');
                 audioPlayer.src = 'data:audio/mp3;base64,' + data.data;
                 audioPlayer.play();
+                audioPlayer.onended = () => {
+                    socket.emit('finished_speaking');
+                };
             });
 
             socket.on('audio_error', (data) => {
                 console.error('Error fetching audio:', data.error);
+            });
+
+            socket.on('start_listening', () => {
+                socket.emit('start_listening');
             });
         });
     </script>

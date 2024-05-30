@@ -1,3 +1,8 @@
+## this app includes the audio
+# purpose is to make it with a clickable button rather than making it listen at all times
+## or to stop listening when the AI speaks
+# OpeanAI stops listening
+
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit
 import threading
@@ -7,11 +12,6 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import base64
-
-## this app includes the audio
-# purpose is to make it with a clickable button rather than making it listen at all times
-## or to stop listening when the AI speaks
-# OpeanAI stops listening
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -23,11 +23,12 @@ openai_api_key = os.getenv('API_KEY')
 client = OpenAI(api_key=openai_api_key)
 
 is_listening = False
+auto_restart = False
 recognizer = sr.Recognizer()
 audio_thread = None
 
 def handle_audio():
-    global is_listening
+    global is_listening, auto_restart
     with sr.Microphone() as source:
         recognizer.adjust_for_ambient_noise(source)
         print("Listening...")
@@ -46,7 +47,7 @@ def handle_audio():
                     "content": text
                 }]
                 
-                response = client.chat.completions.create(model="gpt-4o",messages=messages)
+                response = client.chat_completions.create(model="gpt-4", messages=messages)
                 bot_response = response.choices[0].message.content
                 print(bot_response)
                 socketio.emit('display_text', {'user_text': text, 'bot_text': bot_response})
@@ -65,6 +66,7 @@ def handle_audio():
                     socketio.emit('audio_response', {'data': audio_base64})
                 else:
                     socketio.emit('audio_error', {'error': 'Failed to fetch audio'})
+
             except Exception as e:
                 print(f"An error occurred: {e}")
 
@@ -74,18 +76,26 @@ def index():
 
 @socketio.on('start_listening')
 def start_listening():
-    global is_listening, audio_thread
+    global is_listening, audio_thread, auto_restart
     if not is_listening:
         is_listening = True
+        auto_restart = True
         audio_thread = threading.Thread(target=handle_audio)
         audio_thread.start()
         emit('listening_started', {'status': 'Listening started'})
 
 @socketio.on('stop_listening')
 def stop_listening():
-    global is_listening
+    global is_listening, auto_restart
     is_listening = False
+    auto_restart = False
     emit('listening_stopped', {'status': 'Listening stopped'})
+
+@socketio.on('finished_speaking')
+def finished_speaking():
+    global auto_restart
+    if auto_restart:
+        emit('start_listening')
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
