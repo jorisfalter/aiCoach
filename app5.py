@@ -47,7 +47,7 @@ def handle_audio():
                     "content": text
                 }]
                 
-                response = client.chat_completions.create(model="gpt-4", messages=messages)
+                response = client.chat.completions.create(model="gpt-4", messages=messages)
                 bot_response = response.choices[0].message.content
                 print(bot_response)
                 socketio.emit('display_text', {'user_text': text, 'bot_text': bot_response})
@@ -67,6 +67,8 @@ def handle_audio():
                 else:
                     socketio.emit('audio_error', {'error': 'Failed to fetch audio'})
 
+                if auto_restart:
+                    socketio.emit('restart_listening')
             except Exception as e:
                 print(f"An error occurred: {e}")
 
@@ -90,12 +92,6 @@ def stop_listening():
     is_listening = False
     auto_restart = False
     emit('listening_stopped', {'status': 'Listening stopped'})
-
-@socketio.on('finished_speaking')
-def finished_speaking():
-    global auto_restart
-    if auto_restart:
-        emit('start_listening')
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
