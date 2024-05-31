@@ -38,7 +38,6 @@
                         const audio = document.getElementById('audioPlayback');
                         audio.src = audioUrl;
                         audioChunks = [];
-                        sendAudioToBackend(audioBlob);
                     };
 
                     mediaRecorder.start();
@@ -91,19 +90,6 @@
             }
             document.getElementById('startBtn').disabled = false;
             document.getElementById('stopBtn').disabled = true;
-        }
-
-        function sendAudioToBackend(audioBlob) {
-            const formData = new FormData();
-            formData.append('audio', audioBlob, 'recording.wav');
-
-            fetch('http://localhost:5000/upload', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => console.log('Success:', data))
-                .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
