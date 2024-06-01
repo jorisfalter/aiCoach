@@ -25,8 +25,6 @@ load_dotenv()
 openai_api_key = os.getenv('API_KEY')
 client = OpenAI(api_key=openai_api_key)
 
-import speech_recognition as sr
-
 @app.route('/')
 def index():
     return render_template('index2.html')
