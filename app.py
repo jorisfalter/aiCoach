@@ -3,12 +3,18 @@ from flask_cors import CORS
 import os
 import speech_recognition as sr
 import io    
-import wavio
+from openai import OpenAI
+from dotenv import load_dotenv
+from pydub import AudioSegment
 
 
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/upload": {"origins": "*"}})  # Enable CORS for the /upload route
+load_dotenv()
+openai_api_key = os.getenv('API_KEY')
+client = OpenAI(api_key=openai_api_key)
+
 
 # UPLOAD_FOLDER = 'uploads'
 # if not os.path.exists(UPLOAD_FOLDER):
@@ -33,22 +39,17 @@ def upload_audio():
     # print(audio_file)
 
     try:
-        print("Processing audio...")
 
-        # Use wavio to read the WAV file
-        with io.BytesIO(audio_data) as wav_io:
-            wav_io.seek(0)
-            wav = wavio.read(wav_io)
-
-        # Create an AudioData instance from the wavio output
-        audio = sr.AudioData(wav.data.tobytes(), wav.rate, wav.sampwidth)
-
-        text = recognizer.recognize_google(audio)  # Transcribe using Google Web Speech API
+        # Send the audio file to OpenAI Whisper API
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1", 
+            file=audio_data
+        )
+  
+        text = response['text']
         print("You said:", text)
-    except sr.UnknownValueError:
-        text = "Google Web Speech API could not understand the audio."
-    except sr.RequestError as e:
-        text = f"Could not request results from Google Web Speech API; {e}"
+    except Exception as e:
+        text = f"An error occurred: {e}"
 
     response = jsonify({'message': 'File uploaded successfully', 'transcription': text})
     response.headers.add('Access-Control-Allow-Origin', '*')
