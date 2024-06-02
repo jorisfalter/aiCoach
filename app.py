@@ -5,7 +5,6 @@ import speech_recognition as sr
 import io    
 from openai import OpenAI
 from dotenv import load_dotenv
-from pydub import AudioSegment
 
 
 
