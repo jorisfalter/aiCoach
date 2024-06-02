@@ -39,19 +39,20 @@ def upload_audio():
     # print(audio_file)
 
     try:
-
+        audio_file = io.BytesIO(audio_data)
+        audio_file.name = "recording.wav"
         # Send the audio file to OpenAI Whisper API
         transcription = client.audio.transcriptions.create(
             model="whisper-1", 
-            file=audio_data
+            file=audio_file
         )
-  
-        text = response['text']
-        print("You said:", text)
+        print(transcription.text)
+        # text = transcription['text']
+        # print("You said:", text)
     except Exception as e:
         text = f"An error occurred: {e}"
 
-    response = jsonify({'message': 'File uploaded successfully', 'transcription': text})
+    response = jsonify({'message': 'File uploaded successfully', 'transcription': transcription.text})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
