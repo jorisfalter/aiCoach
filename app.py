@@ -48,16 +48,19 @@ def upload_audio():
             "role": "user",
             "content": transcription.text
         }]
-        print(messages)
+        print("Behind the messages")
         # # Call to OpenAI
         response = client.chat.completions.create(model="gpt-4o",messages=messages)
-        print(bot_response)
+        # print(response)
 
         # # Extract bot response
         bot_response = response.choices[0].message.content
         print(bot_response)
     except Exception as e:
         text = f"An error occurred: {e}"
+
+    return jsonify({'message': 'File uploaded successfully', 'transcription': transcription.text, 'bot_response': bot_response})
+
 
     # response = jsonify({'message': 'File uploaded successfully', 'transcription': transcription.text})
     # response.headers.add('Access-Control-Allow-Origin', '*')
