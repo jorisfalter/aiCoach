@@ -11,7 +11,9 @@
     <button id="startBtn">Start Recording</button>
     <button id="stopBtn" disabled>Stop Recording</button>
     <audio id="audioPlayback" controls></audio>
+    <audio id="audioPlayer" controls hidden></audio>
 
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script>
         let mediaRecorder;
         let audioChunks = [];
@@ -107,6 +109,29 @@
                 .then(data => console.log('Success:', data))
                 .catch(error => console.error('Error:', error));
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var socket = io();
+
+            socket.on('connect', function () {
+                console.log('Connected!');
+            });
+
+            // socket.on('display_text', function (data) {
+            //     document.getElementById('userText').textContent = "User: " + data.user_text;
+            //     document.getElementById('botText').textContent = "Bot: " + data.bot_text;
+            // });
+
+            socket.on('audio_response', function (data) {
+                console.log('Received audio:', data);
+                let audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = 'data:audio/mp3;base64,' + data.data;
+                audioPlayer.play();
+            });
+            socket.on('audio_error', function (data) {
+                console.error('Error fetching audio:', data.error);
+            });
+        });
     </script>
 </body>
 
