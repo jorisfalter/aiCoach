@@ -127,6 +127,11 @@
                 let audioPlayer = document.getElementById('audioPlayer');
                 audioPlayer.src = 'data:audio/mp3;base64,' + data.data;
                 audioPlayer.play();
+
+                audioPlayer.onended = function () {
+                    console.log('Audio playback finished');
+                    socket.emit('audio_finished');
+                };
             });
             socket.on('audio_error', function (data) {
                 console.error('Error fetching audio:', data.error);
