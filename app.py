@@ -18,6 +18,7 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def index():
+    print("loading html")
     return send_from_directory('.', 'newIndex.html')
 
 @app.route('/upload', methods=['POST'])
