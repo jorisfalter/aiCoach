@@ -97,4 +97,5 @@ def upload_audio():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 3000))
+    print(port)
     app.run(debug=True, port=port)
