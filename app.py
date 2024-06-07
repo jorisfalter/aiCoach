@@ -98,4 +98,5 @@ def upload_audio():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 3000))
     print(port)
-    app.run(debug=True, port=port)
+    # app.run(debug=True, port=port)
+    socketio.run(app, host='0.0.0.0', port=port)
