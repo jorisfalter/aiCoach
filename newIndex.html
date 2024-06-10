@@ -28,6 +28,7 @@
         document.getElementById('stopBtn').addEventListener('click', stopRecording);
 
         function startRecording() {
+            console.log("starting recording")
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
                     mediaRecorder = new MediaRecorder(stream);
@@ -66,11 +67,14 @@
                             sum += buffer[i] * buffer[i];
                         }
                         const rms = Math.sqrt(sum / buffer.length);
+                        console.log(rms)
 
                         if (rms < 0.01) {
+                            console.log("in the loop")
                             if (!silenceStart) {
                                 silenceStart = now;
                             } else if (now - silenceStart > silenceDelay) {
+                                console.log("in the stop")
                                 stopRecording();
                             }
                         } else {
@@ -131,6 +135,7 @@
                 audioPlayer.onended = function () {
                     console.log('Audio playback finished');
                     socket.emit('audio_finished');
+                    startRecording();
                 };
             });
             socket.on('audio_error', function (data) {

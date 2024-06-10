@@ -23,6 +23,9 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload_audio():
+    # transcription = None
+    # bot_response = None
+
     if 'audio' not in request.files:
         return jsonify({'error': 'No audio file found'}), 400
 
