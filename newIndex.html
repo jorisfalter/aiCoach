@@ -21,13 +21,13 @@
         let analyser;
         let microphone;
         let scriptProcessor;
-        let silenceStart;
         const silenceDelay = 2000; // 2 seconds
 
         document.getElementById('startBtn').addEventListener('click', startRecording);
         document.getElementById('stopBtn').addEventListener('click', stopRecording);
 
         function startRecording() {
+            let silenceStart;
             console.log("starting recording")
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
@@ -67,10 +67,11 @@
                             sum += buffer[i] * buffer[i];
                         }
                         const rms = Math.sqrt(sum / buffer.length);
-                        console.log(rms)
+                        // console.log(rms)
+                        // console.log(silenceStart)
 
                         if (rms < 0.01) {
-                            console.log("in the loop")
+                            // console.log("in the loop")
                             if (!silenceStart) {
                                 silenceStart = now;
                             } else if (now - silenceStart > silenceDelay) {
