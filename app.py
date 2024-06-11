@@ -7,18 +7,22 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import requests
 import base64
+import eventlet
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/upload": {"origins": "*"}})  # Enable CORS for the /upload route
 load_dotenv()
 openai_api_key = os.getenv('API_KEY')
 client = OpenAI(api_key=openai_api_key)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 @app.route('/')
 def index():
-    print("loading html")
+    # print("loading html")
     return send_from_directory('.', 'newIndex.html')
 
 @app.route('/upload', methods=['POST'])
@@ -49,12 +53,12 @@ def upload_audio():
 
         messages = [{
             "role": "system",
-            "content": "you always answer with opportunism and enthusiasm, pushing me to achieve a ten times better version of myself. You don't answer with practicalities, but focus on my mindset and energy level. You never give the standard solutions, always the creative, out of the box solutions. Your name is Tony."
+            "content": "you always answer with opportunism and enthusiasm, pushing me to achieve a ten times better version of myself. You don't answer with practicalities, but focus on my mindset and energy level. You never give the standard solutions, always the creative, out of the box solutions. You keep your answer short. Your name is Tony."
             }, {
             "role": "user",
             "content": transcription.text
         }]
-        print("Behind the messages")
+        # print("Behind the messages")
         # # Call to OpenAI
         response = client.chat.completions.create(model="gpt-4o",messages=messages)
         # print(response)
@@ -101,6 +105,6 @@ def upload_audio():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 3000))
-    print(port)
+    # print(port)
     # app.run(debug=True, port=port)
-    socketio.run(app, host='0.0.0.0', port=port)
+    socketio.run(app, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
