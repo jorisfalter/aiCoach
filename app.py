@@ -7,7 +7,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import requests
 import base64
-import eventlet
+import gevent
 import logging
 
 # Configure logging
@@ -18,7 +18,7 @@ cors = CORS(app, resources={r"/upload": {"origins": "*"}})  # Enable CORS for th
 load_dotenv()
 openai_api_key = os.getenv('API_KEY')
 client = OpenAI(api_key=openai_api_key)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="gevent")
 
 @app.route('/')
 def index():
@@ -107,4 +107,4 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', 3000))
     # print(port)
     # app.run(debug=True, port=port)
-    socketio.run(app, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=port)
