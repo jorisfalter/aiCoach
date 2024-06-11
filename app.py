@@ -22,7 +22,7 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 @app.route('/')
 def index():
-    # print("loading html")
+    print("loading html")
     return send_from_directory('.', 'newIndex.html')
 
 @app.route('/upload', methods=['POST'])
