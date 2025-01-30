@@ -32,7 +32,7 @@
 
         document.getElementById('startBtn').addEventListener('click', startRecording);
         // document.getElementById('stopBtn').addEventListener('click', stopRecording);
-        document.getElementById('statusMessage').textContent = "Press the 'start recording' button and Say Hi";
+        document.getElementById('statusMessage').textContent = "Press the 'Start Recording' button and say Hi";
         document.getElementById('replyMessage').textContent = "";
 
 
@@ -113,7 +113,7 @@
             // document.getElementById('stopBtn').disabled = true;
 
             // Display "Stopped recording" message
-            document.getElementById('statusMessage').textContent = "Stopped recording - Thinking Of A Reply - Putting it into voice ...- This takes up to 10 seconds";
+            document.getElementById('statusMessage').textContent = "Stopped recording - Thinking of the reply - Putting it into voice ... This takes up to 10 seconds";
 
         }
 
@@ -139,16 +139,15 @@
                 console.log('Connected!');
             });
 
-            // socket.on('display_text', function (data) {
-            //     document.getElementById('userText').textContent = "User: " + data.user_text;
-            //     document.getElementById('botText').textContent = "Bot: " + data.bot_text;
-            // });
+            socket.on('display_text', function (data) {
+                // document.getElementById('userText').textContent = "User: " + data.user_text;
+                document.getElementById('replyMessage').textContent = "Tony: " + data.bot_text;
+            });
 
             socket.on('audio_response', function (data) {
                 console.log('Received audio:', data);
                 document.getElementById('statusMessage').textContent = "Tony Talking";
 
-                document.getElementById('replyMessage').textContent = data.data;
 
 
                 let audioPlayer = document.getElementById('audioPlayer');

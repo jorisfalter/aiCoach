@@ -80,7 +80,9 @@ def upload_audio():
         }
 
         tony_response = requests.request("POST", url, json=payload, headers=headers)
-        print("received tony response")
+        print("Received Tony Response")
+        # socketio.emit('display_text', {'data': tony_response})
+
         if tony_response.status_code == 200:
             # Extract binary audio content
             audio_content = tony_response.content
