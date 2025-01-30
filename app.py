@@ -13,6 +13,8 @@ import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
+# os.kill(os.getpid(), 9) # proxy issue
+
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/upload": {"origins": "*"}})  # Enable CORS for the /upload route
