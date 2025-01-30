@@ -8,10 +8,17 @@
 </head>
 
 <body>
-    <button id="startBtn">Start Recording</button>
-    <button id="stopBtn" disabled>Stop Recording</button>
-    <audio id="audioPlayback" controls></audio>
-    <audio id="audioPlayer" controls hidden></audio>
+    <div style="padding-left: 10px; padding-top: 20px;">
+        <p id="statusMessage"></p>
+        <button id="startBtn">Start Recording</button>
+        <!-- <button id="stopBtn" disabled>Stop Recording</button> -->
+        <br>
+        <br>
+        <audio id="audioPlayback" controls></audio>
+        <audio id="audioPlayer" controls hidden></audio>
+        <p id="replyMessage"></p>
+
+    </div>
 
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script>
@@ -24,11 +31,17 @@
         const silenceDelay = 2000; // 2 seconds
 
         document.getElementById('startBtn').addEventListener('click', startRecording);
-        document.getElementById('stopBtn').addEventListener('click', stopRecording);
+        // document.getElementById('stopBtn').addEventListener('click', stopRecording);
+        document.getElementById('statusMessage').textContent = "Press the 'start recording' button and Say Hi";
+        document.getElementById('replyMessage').textContent = "";
+
+
 
         function startRecording() {
             let silenceStart;
             console.log("starting recording")
+            document.getElementById('statusMessage').textContent = "Started recording";
+
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
                     mediaRecorder = new MediaRecorder(stream);
@@ -46,7 +59,7 @@
 
                     mediaRecorder.start();
                     document.getElementById('startBtn').disabled = true;
-                    document.getElementById('stopBtn').disabled = false;
+                    // document.getElementById('stopBtn').disabled = false;
 
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     analyser = audioContext.createAnalyser();
@@ -75,7 +88,7 @@
                             if (!silenceStart) {
                                 silenceStart = now;
                             } else if (now - silenceStart > silenceDelay) {
-                                console.log("in the stop")
+                                console.log("Stopped recording")
                                 stopRecording();
                             }
                         } else {
@@ -97,7 +110,11 @@
                 audioContext.close();
             }
             document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
+            // document.getElementById('stopBtn').disabled = true;
+
+            // Display "Stopped recording" message
+            document.getElementById('statusMessage').textContent = "Stopped recording - Thinking Of A Reply - Putting it into voice ...- This takes up to 10 seconds";
+
         }
 
         function sendAudioToBackend(audioBlob) {
@@ -129,6 +146,11 @@
 
             socket.on('audio_response', function (data) {
                 console.log('Received audio:', data);
+                document.getElementById('statusMessage').textContent = "Tony Talking";
+
+                document.getElementById('replyMessage').textContent = data.data;
+
+
                 let audioPlayer = document.getElementById('audioPlayer');
                 audioPlayer.src = 'data:audio/mp3;base64,' + data.data;
                 audioPlayer.play();
