@@ -4,6 +4,7 @@ from flask_socketio import SocketIO
 import os
 import io    
 from openai import OpenAI
+# import openai
 from dotenv import load_dotenv
 import requests
 import base64
@@ -17,7 +18,8 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/upload": {"origins": "*"}})  # Enable CORS for the /upload route
 load_dotenv()
 openai_api_key = os.getenv('API_KEY')
-client = OpenAI(api_key=openai_api_key,  transport=None )  # Latest way to initialize the client
+# openai.api_key = openai_api_key
+client = OpenAI(api_key=openai_api_key )  # Latest way to initialize the client
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="gevent")
 
 @app.route('/')
